@@ -23,12 +23,18 @@ void init_shell() {
     char *username = getenv("USER");
     printf("\n\nUSER is: @%s", username);
     printf("\n");
-    sleep(1);
+    sleep(2);
     clear();
 }
 
 void help() {
 
+    printf("\nSFW : Splits the first word of a line\n"
+           "MRS : Returns the most repeated world in a file\n"
+           "DAS : Deletes all spaces and prints the file\n"
+           "SNC : Shows all lines that are not comment. comments represented with #\n"
+           "SNL : Shows the number of lines\n"
+           "STFL : Shows ten first line in a file");
 }
 
 int execute(char *input) {
@@ -37,17 +43,31 @@ int execute(char *input) {
     char *words;
     bool isWaiting = true;
     int i, getVal;
+    words = strtok(input, " ");
+    int j;
 
-
-    if (input[0] == 'c' && input[1] == 'd') {
-
+    i = 0;
+    while (words != NULL) {
+        if (strcmp(words, "&"))
+            args[i] = words;
+        i++;
+        words = strtok(NULL, " ");
     }
-
-    if (!strcmp(input, "hints")) {
-        printf("%s", help);
-        fflush(stdin);
-        fflush(stdout);
-        return 1;
+    args[i] = NULL;
+    if (!strcmp(args[0], "help")) {
+        help();
+    }
+    else if (!strcmp(args[0], "cd")) {
+        //printf("0");
+        if (!strcmp(input[2], NULL)) {
+            //printf("1");
+        } else {
+            //printf("2");
+            chdir(args[1]);
+        }
+    }
+    else {
+        printf("err");
     }
 
     // invoke execvp()
@@ -55,6 +75,10 @@ int execute(char *input) {
 
     //else return 0;
     if (isWaiting == false) return 2;
+    int k;
+    for(k=0; k< sizeof(args); k++){
+        args[k] = NULL;
+    }
 
     return getVal; // success
 
@@ -70,11 +94,11 @@ int main() {
 
     pid_t pid;
     char inp[MAX_LINE];
-
+    char location[MAX_LINE];
     init_shell();
-
+    getcwd(location, MAX_LINE);
     while (should_run) {
-        printf("\nuser> ");
+        printf("\nuser%s ", location);
         fflush(stdout);  //flushes the output buffer of a stream
 
         // take the string input, and update history (if it's not invoking a previous input through '!')
@@ -111,5 +135,3 @@ int main() {
 
     return 0;
 }
-
-
