@@ -27,6 +27,12 @@ void init_shell() {
     clear();
 }
 
+void printDir() {
+    char cwd[MAX_LINE];
+    getcwd(cwd, sizeof(cwd));
+    printf("\nDir: %s", cwd);
+}
+
 void help() {
 
     printf("\nSFW : Splits the first word of a line\n"
@@ -37,80 +43,81 @@ void help() {
            "STFL : Shows ten first line in a file");
 }
 
+int changeDirectory(char *args[]) {
+    // If we write no path (only 'cd'), then go to the home directory
+    if (args[1] == NULL) {
+        chdir(getenv("HOME"));
+        return 1;
+    }
+        // Else we change the directory to the one specified by the
+        // argument, if possible
+    else {
+        if (chdir(args[1]) == -1) {
+            printf(" %s: no such directory\n", args[1]);
+            return -1;
+        } else printDir();
+    }
+    return 0;
+}
+
+void splitFirstWord(){
+    FILE *ftp;
+    ftp = fopen("test.txt", "a+");
+
+}
+
 int execute(char *input) {
 
     char *args[MAX_LINE / 2 + 1];    /* input line (of 80) has max of 40 arguments */
     char *words;
     bool isWaiting = true;
-    int i, getVal;
+    int i;
     words = strtok(input, " ");
     int j;
 
     i = 0;
     while (words != NULL) {
-        if (strcmp(words, "&"))
+        if (strcmp(words, " ") == 0)
             args[i] = words;
         i++;
         words = strtok(NULL, " ");
     }
     args[i] = NULL;
-    if (!strcmp(args[0], "help")) {
+
+    if (strcmp(args[0], "help") == 0) {
         help();
-    }
-    else if (!strcmp(args[0], "cd")) {
-        //printf("0");
-        if (!strcmp(input[2], NULL)) {
-            //printf("1");
-        } else {
-            //printf("2");
-            chdir(args[1]);
-        }
-    }
-    else {
-        printf("err");
-    }
+        return 1;
+    } else if (strcmp(args[0], "cd") == 0) {
+        changeDirectory(args);
+        return 1;
+    } else if (strcmp(args[0]), "SFW"){
+        splitFirstWord();
+        return 1;
 
-    // invoke execvp()
-    getVal = execvp(args[0], args);
-
-    //else return 0;
-    if (isWaiting == false) return 2;
-    int k;
-    for(k=0; k< sizeof(args); k++){
-        args[k] = NULL;
     }
-
-    return getVal; // success
+    else if (execvp(args[0], args) < 0) {
+        fprintf(stderr, "can not execute");
+        return -1;
+    }
 
 }
 
 
 int main() {
-    FILE *f; // this file will save history
 
-    bool should_run = true;
-    int i, getVal;
+    int getVal;
     int lastPos; // will be required for waiting / not-waiting child process to end
 
     pid_t pid;
-    char inp[MAX_LINE];
-    char location[MAX_LINE];
+    char *inp[MAX_LINE];
     init_shell();
-    getcwd(location, MAX_LINE);
-    while (should_run) {
-        printf("\nuser%s ", location);
+    while (1) {
+        printDir();
         fflush(stdout);  //flushes the output buffer of a stream
 
         // take the string input, and update history (if it's not invoking a previous input through '!')
         gets(inp);
 
-        if (!strcmp(inp, "up")) {
-            should_run = false;
-            exit(0);
-        }
-        //if (inp[0] != '!') { updateHistory(inp); }
-
-        // fork a child process
         pid = fork();
 
         if (pid < 0) // error
@@ -125,7 +132,8 @@ int main() {
             if (getVal == 1) continue;
             if (getVal == -1)
                 printf("Sorry, that input is not supported in this shell.");
-        } else // parent
+        }
+        else // parent
         {
             // Wait for child to finish execution unless user ends with '&' (reversing the original part of the problem)
             lastPos = strlen(inp) - 1;
