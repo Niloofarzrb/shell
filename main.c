@@ -132,19 +132,36 @@ void execArgsPiped(char** parsed, char** parsedpipe)
 void help()
 {
     puts("\nSFW : Splits the first word of a line\n"
-                "MRS : Returns the most repeated word in a file\n"
-                "DAS : Deletes all spaces and prints the file\n"
-                "SNC : Shows all lines that are not comment. comments represented with #\n"
-                "SNL : Shows the number of lines\n"
-                "STFL : Shows ten first line in a file");
+         "MRW : Returns the most repeated word in a file\n"
+         "DAS : Deletes all spaces and prints the file\n"
+         "SNC : Shows all lines that are not comment. comments represented with #\n"
+         "SNL : Shows the number of lines\n"
+         "STFL : Shows ten first line in a file");
 
     return;
 }
-void splitFirstWord(){
+
+void splitFirstWord(char *name){
+
+    FILE *file;
+    file= fopen(name, "r");
+    char *line;
+    size_t size=0;
+    while(getline(&line, &size, file)!=-1){
+        printf("%s \n" , strtok(line, " "));
+   }
+    fclose(file);
 
 }
 
-void mostRepeatedWord(){
+void mostRepeatedWord(char *name){
+    //command = esme dastur    cat beshe ba .sh    cat beshe ba      cat beshe ba bash
+    char *command = "bash MRW.sh ";
+    char *newString = malloc(strlen(command) + strlen(name) + 1);
+    strcpy(newString, command);
+    strcat(newString, name);
+    system(newString);
+    //bashHandler(command, name);
 
 }
 
@@ -157,19 +174,31 @@ void showNoneComments(){
 }
 
 void showTenFirstLine(){
-    
+
 }
+
+//void bashHandler(char *command, char *name){
+//    char *newCommand;
+//    newCommand = strcat(command, ".sh ");
+//    char *fullCommand;
+//    fullCommand = strcat("bash ",newCommand);
+//    char *newString;
+//    newString = malloc(strlen(fullCommand) + strlen(name) + 1);
+//    strcpy(newString, fullCommand);
+//    strcat(newString, name);
+//    system(newString);
+
+//     }
 // Function to execute builtin commands
-int ownCmdHandler(char** parsed)
+int commandHandler(char** parsed)
 {
     int NoOfOwnCmds = 8, i, switchOwnArg = 0;
     char* ListOfOwnCmds[NoOfOwnCmds];
-    char* username;
 
     ListOfOwnCmds[0] = "help";
     ListOfOwnCmds[1] = "cd";
     ListOfOwnCmds[2] = "SFW";
-    ListOfOwnCmds[3] = "MRS";
+    ListOfOwnCmds[3] = "MRW";
     ListOfOwnCmds[4] = "DAS";
     ListOfOwnCmds[5] = "SNC";
     ListOfOwnCmds[6] = "SNL";
@@ -182,31 +211,41 @@ int ownCmdHandler(char** parsed)
         }
     }
 
-    switch (switchOwnArg) {
-        case 1:
-            help();
-            return 1;
-        case 2:
-            chdir(parsed[1]);
-            return 1;
-        case 3:
-            splitFirstWord();
-            return 1;
-        case 4:
-            mostRepeatedWord();
-            return 1;
-        case 5:
-            deleteSpaces();
-            return 1;
-        case 6:
-            showNoneComments();
-            return 1;
-        case 7:
-            showTenFirstLine();
-        default:
-            break;
+    pid_t pid = fork();
+    if(pid==0) {//child
+        switch (switchOwnArg) {
+            case 1:
+                help();
+                return 1;
+            case 2:
+                chdir(parsed[1]);
+                return 1;
+            case 3:
+                splitFirstWord(parsed[1]);
+                return 1;
+            case 4:
+                mostRepeatedWord(parsed[1]);
+                return 1;
+            case 5:
+                deleteSpaces();
+                return 1;
+            case 6:
+                showNoneComments();
+                return 1;
+            case 7:
+                showTenFirstLine();
+                return 1;
+            default:
+                break;
+        }
+        exit(0);
     }
-
+    else if(pid<0){
+    	printf("error");
+    }
+    else{ //parent should wait for children
+        wait(NULL);
+    }
     return 0;
 }
 
@@ -259,7 +298,7 @@ int processString(char* str, char** parsed, char** parsedpipe)
         parseSpace(str, parsed);
     }
 
-    if (ownCmdHandler(parsed))
+    if (commandHandler(parsed))
         return 0;
     else
         return 1 + piped;
@@ -279,12 +318,7 @@ int main()
         if (takeInput(inputString))
             continue;
         // process
-        execFlag = processString(inputString,
-                                 parsedArgs, parsedArgsPiped);
-        // execflag returns zero if there is no command
-        // or it is a builtin command,
-        // 1 if it is a simple command
-        // 2 if it is including a pipe.
+        execFlag = processString(inputString, parsedArgs, parsedArgsPiped);
 
         // execute
         if (execFlag == 1)
