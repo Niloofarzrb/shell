@@ -158,6 +158,7 @@ void mostRepeatedWord(char *name){
     //command = esme dastur    cat beshe ba .sh    cat beshe ba      cat beshe ba bash
     char *command = "bash MRW.sh ";
     char *newString = malloc(strlen(command) + strlen(name) + 1);
+    printf("\n");
     strcpy(newString, command);
     strcat(newString, name);
     system(newString);
@@ -165,11 +166,55 @@ void mostRepeatedWord(char *name){
 
 }
 
-void deleteSpaces(){
+void deleteSpaces(char *name){
+	FILE *file;
+	char line[1000];
+	int fileChar;
+	printf("\n");
+
+	file = fopen(name, "r");
+	if(file){
+	   fgets(line , 1000 , file);
+	   fseek(file, 0, SEEK_SET);
+
+	   do{
+
+	      fileChar = fgetc(file);
+
+	      if(isgraph(fileChar)){
+	      	putchar(fileChar);
+	      }
+
+	   } while(fileChar != EOF);
+	   fclose(file);
+         }
+         printf("\n");
 
 }
 
-void showNoneComments(){
+void showNoneComments(char *name){
+
+    FILE *file;
+    file= fopen(name, "r");
+    char line[MAXLIST];
+    char *newString;
+    while(fgets(line, sizeof(line) , file)){
+    	newString = strtok(line, " ");
+    	if(newString[0]=='#'){
+    	continue;
+    	}
+    	else{
+    	printf("%s", line);
+    	}
+    	newString="";
+
+   }
+    fclose(file);
+
+
+}
+
+void showNumberOfLines(){
 
 }
 
@@ -227,13 +272,16 @@ int commandHandler(char** parsed)
                 mostRepeatedWord(parsed[1]);
                 return 1;
             case 5:
-                deleteSpaces();
+                deleteSpaces(parsed[1]);
                 return 1;
             case 6:
-                showNoneComments();
+                showNoneComments(parsed[1]);
                 return 1;
             case 7:
-                showTenFirstLine();
+            	showNumberOfLines(parsed[1]);
+            	return 1;
+            case 8:
+                showTenFirstLine(parsed[1]);
                 return 1;
             default:
                 break;
