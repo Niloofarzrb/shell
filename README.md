@@ -7,9 +7,8 @@ In addition to Linux commands we have some special Commands. Here we explain abo
 5- SNL : This command count the number of lines in a file and prints it. The syntax of entering this command is: SNL nameOfFile<br/>
 6- STFL : This command prints the ten first line of a file. The syntax of entering this command is: STFL nameOfFile<br/>
 and we have also a "help" command that shows all special commands and their job.<br/>
-
-We also have a history file. When you run the shell, a file that named history.txt will be created.Every command you enter, goes to this file and after runnig the shell again,<br/>
-the content of this file will be deleted. In the shell, if you enter up or down button, you can move between prevoius commands that you entered.<br/>
-
+<br/>
+We also have a history file. When you run the shell, a file that named history.txt will be created.Every command you enter, goes to this file and after runnig the shell again,the content of this file will be deleted. In the shell, if you enter up or down button, you can move between prevoius commands that you entered.<br/>
+<br/>
 In a normal situation, if you press ctrl+c, the command line will close, but here if you enter that, it wont't close and you can keep enter input.<br/>
 If you want to exit the shell you should press ctrl+c.
