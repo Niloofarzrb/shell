@@ -1,5 +1,5 @@
 Linux Shell
-In addition to Linux commands we have some special Commands. Here we explain about their syntax and their job:
+In addition to Linux commands we have some special Commands. Here we explain about their syntax and their job:<br/>
 1- SFW : This command split the first word of every line of a file and prints it. The syntax of entering this command is: SFW nameOfFile
 2- MRW : This command prints the most repeated word in a file. The syntax of entering this command is: MRW nameOfFile
 3- DAS : This command delete all spaces and tabs and enters(" ","\t","\n")in a file and prints the new string. The syntax of entering this command is: DAS nameOfFile
