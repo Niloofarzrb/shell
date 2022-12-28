@@ -6,6 +6,7 @@
 #include<sys/wait.h>
 #include<readline/readline.h>
 #include<readline/history.h>
+#include<signal.h>
 
 #define MAXCOM 1000 // max number of letters to be supported
 #define MAXLIST 100 // max number of commands to be supported
@@ -258,7 +259,15 @@ void addToHistory(char *input) {
     fclose(history);
 }
 
+void sigintHandler(int sig_num) {
+
+    signal(SIGINT, sigintHandler);
+    fflush(stdin);
+    return;
+}
+
 int main() {
+    signal(SIGINT, sigintHandler);
     char inputString[MAXCOM], *parsedArgs[MAXLIST];
     int execFlag = 0;
     FILE *history;
