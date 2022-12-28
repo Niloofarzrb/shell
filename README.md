@@ -1,4 +1,4 @@
-Linux Shell
+Linux Shell"\n"
 In addition to Linux commands we have some special Commands. Here we explain about their syntax and their job:
 1- SFW : This command split the first word of every line of a file and prints it. The syntax of entering this command is: SFW nameOfFile
 2- MRW : This command prints the most repeated word in a file. The syntax of entering this command is: MRW nameOfFile
